@@ -7,7 +7,7 @@ import { StyleSheet, Text, View, Animated, TouchableOpacity } from 'react-native
 import ShimmerInView from './shared/Shimmer';
 import ShimmerOpacityInView from './shared/ShimmerOpacity';
 
-const defaultTimeState = 1 * 60 * 1000;
+const defaultTimeState = 10 * 60 * 1000;
 const oneMinute = 60 * 1000;
 const oneSecond = 1000;
 
