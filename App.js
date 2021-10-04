@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontFamily: 'monospace',
+    // fontFamily: 'monospace',
     fontSize: 30,
     textShadowColor: 'rgba(100, 200, 10, 0.8)',
     textShadowRadius: 10
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   cursor: {
-    fontFamily: 'monospace',
+    // fontFamily: 'monospace',
     fontSize: 30,
     color: '#080'
   },

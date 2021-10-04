@@ -1,28 +1,40 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "web": "expo start --web",
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "~1.15.0",
+    "date-fns": "^2.24.0",
     "expo": "~42.0.1",
     "expo-av": "~9.2.3",
+    "expo-background-fetch": "~9.2.2",
     "expo-linear-gradient": "~9.2.0",
+    "expo-splash-screen": "~0.11.2",
     "expo-status-bar": "~1.0.4",
+    "expo-task-manager": "~9.2.2",
+    "expo-updates": "~0.8.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native": "~0.63.4",
     "react-native-animated-colors": "^1.0.5",
+    "react-native-background-task": "^0.2.1",
     "react-native-background-timer": "^2.4.1",
     "react-native-elements": "^3.4.2",
+    "react-native-gesture-handler": "~1.10.2",
     "react-native-linear-gradient": "^2.5.6",
+    "react-native-reanimated": "~2.2.0",
+    "react-native-screens": "~3.4.0",
+    "react-native-unimodules": "0.14.10",
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
   },
-  "private": true
+  "private": true,
+  "name": "mobile-timer",
+  "version": "1.0.0"
 }

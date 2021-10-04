@@ -1,22 +1,69 @@
 import React, {useRef, useEffect, useState} from 'react';
-import { StyleSheet, Text, View, Animated, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Animated, TouchableOpacity, AppState } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
-import BackgroundTimer from 'react-native-background-timer';
+import { Audio } from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { differenceInSeconds } from 'date-fns';
 import ShimmerInView from '../shared/Shimmer';
 import ShimmerOpacityInView from '../shared/ShimmerOpacity';
 
-const defaultTimeState = 10 * 60 * 1000;
-const oneMinute = 60 * 1000;
-const oneSecond = 1000;
+
+const DEAFAULT_TIME_STAMP = 1 * 60 * 1000;
+const ONE_MINUTE = 60 * 1000;
+const ONE_SECOND = 1000;
 
 let timerId = null;
 
 function Controls() {
-	const [ timerState, setTimerState ] = useState(defaultTimeState)
+	const [ timerState, setTimerState ] = useState(DEAFAULT_TIME_STAMP)
 	const [ running, setRunning ] = useState(false)
 	const [ sound, setSound ] = React.useState();
 
-	// console.log(BackgroundTimer)
+	const appState = useRef(AppState.currentState);
+  const [elapsed, setElapsed] = useState(0);
+
+	useEffect(() => {
+    const subscription = AppState.addEventListener('change', _handleAppStateChange);
+
+    return () => {
+			subscription.remove && subscription.remove()
+    };
+  }, []);
+
+	const recordStartTime = async () => {
+		try {
+			const now = new Date();
+			await AsyncStorage.setItem("@start_time", now.toISOString());
+		} catch (err) {
+			// TODO: handle errors from setItem properly
+			console.warn(err);
+		}
+	};
+
+	const getElapsedTime = async () => {
+		try {
+			const startTime = await AsyncStorage.getItem("@start_time");
+			const now = new Date();
+			return differenceInSeconds(now, Date.parse(startTime));
+		} catch (err) {
+			// TODO: handle errors from setItem properly
+			console.warn(err);
+		}
+	};
+
+	const _handleAppStateChange = async (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) && nextAppState === 'active'
+    ) {
+			const elapsed = await getElapsedTime();
+			setElapsed(elapsed);
+      console.log('App has come to the foreground!', elapsed);
+    }
+
+    appState.current = nextAppState;
+    console.log('AppState', appState.current);
+  };
+
 
 	async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
@@ -27,8 +74,8 @@ function Controls() {
   }
 
   const formatTimestamp = (time) => {
-    const minutes = Math.floor(time / oneMinute) 
-    const seconds = Math.round(time % oneMinute) / oneSecond
+    const minutes = Math.floor(time / ONE_MINUTE) 
+    const seconds = Math.round(time % ONE_MINUTE) / ONE_SECOND
     return (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds)
   }
 
@@ -41,16 +88,17 @@ function Controls() {
 
   useEffect(() => {
     if (running) {
+			recordStartTime()
       timerId = setInterval(() => {
         setTimerState(prevState => {
           if (prevState == 0) {
             setRunning(false)
             playSound()
           }
-          return prevState - oneSecond
+          return prevState - ONE_SECOND
           
         })
-      }, oneSecond)
+      }, ONE_SECOND)
     }
     return () => {
       clearInterval(timerId)
@@ -78,10 +126,10 @@ function Controls() {
 			}
 			{
 				running ? 
-				<TouchableOpacity onPress = {() => setTimerState(prev => prev + oneMinute)}>
+				<TouchableOpacity onPress = {() => setTimerState(prev => prev + ONE_MINUTE)}>
 					<Entypo name = 'time-slot' size = { 50 } color = '#080' />
 				</TouchableOpacity> :
-				<TouchableOpacity onPress = {() => setTimerState(defaultTimeState)}>
+				<TouchableOpacity onPress = {() => setTimerState(DEAFAULT_TIME_STAMP)}>
 					<Entypo name = 'back-in-time' size = { 50 } color = '#080' />
 				</TouchableOpacity>
 			}
@@ -97,7 +145,7 @@ const styles = StyleSheet.create({
   timer: {
 		width: 200,
     color: '#080',
-    fontFamily: 'monospace',
+    // fontFamily: 'monospace',
     fontSize: 70,
 		textAlign: 'center'
 		
